@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CaribeChain | Hub & Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl.min.js"></script>
+    <style>
+        :root {
+            --bg: #07090e;
+            --card-bg: rgba(18, 24, 38, 0.75);
+            --card-hover: rgba(26, 35, 56, 0.85);
+            --accent: #00f2fe;
+            --accent-glow: rgba(0, 242, 254, 0.25);
+            --accent-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            --purple-gradient: linear-gradient(135deg, #7928ca 0%, #ff0080 100%);
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(0, 242, 254, 0.35);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% -10%, rgba(0, 242, 254, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 10% 40%, rgba(121, 40, 202, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(0, 242, 254, 0.06) 0%, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 40px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(7, 9, 14, 0.8);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 36px;
+        }
+
+        .nav-logo {
+            font-weight: 800;
+            font-size: 1.35rem;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-badge {
+            background: var(--accent-gradient);
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            list-style: none;
+        }
+
+        .nav-links button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links button:hover, .nav-links button.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border);
+        }
+
+        .nav-links button.active {
+            color: var(--accent);
+            border-color: var(--border-hover);
+            background: rgba(0, 242, 254, 0.08);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .node-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 6px 14px;
+            border-radius: 100px;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .container {
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 30px 24px 80px 24px;
+            flex: 1;
+        }
+
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .hero-title h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(180deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-title p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px 24px;
+            backdrop-filter: blur(12px);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-hover);
+            box-shadow: 0 10px 25px -5px var(--accent-glow);
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #fff;
+            word-break: break-all;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 960px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            margin-bottom: 24px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        th {
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid var(--border);
+            color: #e2e8f0;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tag-block {
+            background: rgba(0, 242, 254, 0.12);
+            color: var(--accent);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+
+        input, textarea {
+            width: 100%;
+            background: rgba(10, 14, 22, 0.8);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .btn {
+            background: var(--accent-gradient);
+            color: #040914;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.08) 0%, rgba(79, 172, 254, 0.04) 100%);
+            border: 1px solid var(--border-hover);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .balance-num {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            margin: 6px 0;
+        }
+
+        .key-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+            margin-bottom: 12px;
+            color: var(--text-dim);
+            position: relative;
+        }
+
+        .key-box strong {
+            color: #fff;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .progress-bar-bg {
+            background: rgba(255, 255, 255, 0.05);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin: 16px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-gradient);
+            box-shadow: 0 0 12px var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.25s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 40px;
+            color: var(--text-dim);
+            font-size: 0.82rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(7, 9, 14, 0.9);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <a href="#" class="nav-logo">
+                CARIBECHAIN <span class="logo-badge">MAINNET</span>
+            </a>
+            <ul class="nav-links">
+                <li><button class="active" onclick="switchTab('explorer')">Explorer</button></li>
+                <li><button onclick="switchTab('wallet')">My Wallet</button></li>
+                <li><button onclick="switchTab('contracts')">Smart Contracts</button></li>
+                <li><button onclick="switchTab('mining')">Mining</button></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <div class="node-badge" id="net-badge">
+                <div class="pulse-dot"></div>
+                <span id="net-status-text">NETWORK ONLINE</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- HERO -->
+        <div class="hero">
+            <div class="hero-title">
+                <h1 id="tab-heading">CaribeChain Explorer</h1>
+                <p id="tab-subheading">Monitoreo en tiempo real del estado de la red y registros criptográficos</p>
+            </div>
+            <div>
+                <input type="text" id="custom-node-url" style="width: 280px; font-size: 0.8rem; padding: 8px 12px;" value="https://caibechaiapi.autodilerpro.com" placeholder="URL del Nodo...">
+            </div>
+        </div>
+
+        <!-- STATS OVERVIEW -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Network Height</span>
+                <div id="stat-height" class="stat-value">...</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Latest Block Hash</span>
+                <div id="stat-hash" class="stat-value" style="font-size: 0.95rem;">...</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Mining Difficulty</span>
+                <div id="stat-diff" class="stat-value">...</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Circulating Supply</span>
+                <div id="stat-supply" class="stat-value">...</div>
+            </div>
+        </div>
+
+        <!-- TAB 1: EXPLORER -->
+        <div id="tab-explorer" class="tab-content active">
+            <div class="main-layout">
+                <div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">📦 Últimos Bloques Minados</div>
+                            <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="fetchDashboardData()">Refrescar</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Altura</th>
+                                    <th>Hash</th>
+                                    <th>Txs</th>
+                                    <th>Minero</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blocks-tbody">
+                                <tr><td colspan="5" style="text-align: center; color: var(--text-dim);">Cargando bloques...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="panel">
+                        <div class="panel-title" style="margin-bottom: 16px;">🔍 Consultar Saldo</div>
+                        <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 16px;">Verifica el balance y nonce registrado en la StateDB.</p>
+                        
+                        <div class="input-group">
+                            <input type="text" id="search-address" placeholder="CAR..." />
+                        </div>
+                        <button class="btn" style="width: 100%;" onclick="queryBalance()">Consultar Fondos</button>
+
+                        <div id="query-result-card" class="balance-card" style="display: none;">
+                            <span class="stat-label">Saldo Disponible</span>
+                            <div id="query-balance-val" class="balance-num">0.00 CAR</div>
+                            <span style="font-size: 0.78rem; color: var(--text-dim);" id="query-nonce-val">Nonce: 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: MY WALLET -->
+        <div id="tab-wallet" class="tab-content">
+            <div class="main-layout">
+                <div>
+                    <div class="panel">
+                        <div class="panel-title" style="margin-bottom: 16px;">🔐 Tu Billetera CaribeChain</div>
+                        <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                            <button class="btn" onclick="generateNewWallet()">Generar Nueva Wallet</button>
+                            <button class="btn btn-secondary" onclick="importWalletPrompt()">Importar Llave</button>
+                        </div>
+
+                        <div id="wallet-details" style="display: none;">
+                            <div class="key-box">
+                                <strong>Dirección Pública:</strong>
+                                <span id="w-address" style="color: var(--accent);">...</span>
+                            </div>
+                            <div class="key-box">
+                                <strong>Llave Privada (Ed25519 Secret):</strong>
+                                <span id="w-privkey" style="color: #cbd5e1;">...</span>
+                            </div>
+
+                            <div class="balance-card">
+                                <span class="stat-label">Saldo de tu Billetera</span>
+                                <div id="w-balance" class="balance-num">0.00 CAR</div>
+                                <button class="btn btn-secondary" style="margin-top: 8px; padding: 6px 14px; font-size: 0.8rem;" onclick="refreshWalletBalance()">Actualizar Saldo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="panel">
+                        <div class="panel-title" style="margin-bottom: 16px;">💸 Enviar Transferencia</div>
+                        <div class="input-group">
+                            <label class="input-label">Destinatario (CAR...)</label>
+                            <input type="text" id="tx-to" placeholder="CAR..." />
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Monto (CAR)</label>
+                            <input type="number" step="0.00000001" id="tx-amount" placeholder="10.0" />
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Comisión / Fee (CAR)</label>
+                            <input type="number" step="0.0001" id="tx-fee" value="0.001" />
+                        </div>
+                        <button class="btn" style="width: 100%;" onclick="sendTransaction()">Firmar y Transmitir</button>
+                        <div id="tx-status" style="margin-top: 12px; font-size: 0.85rem; text-align: center;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: SMART CONTRACTS -->
+        <div id="tab-contracts" class="tab-content">
+            <div class="main-layout" style="grid-template-columns: 1fr;">
+                <div class="panel">
+                    <div class="panel-title" style="margin-bottom: 16px;">⚡ CaribeVM - Despliegue y Ejecución de Smart Contracts</div>
+                    <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px;">
+                        Ejecuta bytecode directamente en la máquina virtual basada en pila de CaribeChain. Soporta instrucciones como: 
+                        <code style="color: var(--accent); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">PUSH &lt;val&gt;</code>, 
+                        <code style="color: var(--accent); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">ADD</code>, 
+                        <code style="color: var(--accent); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">SUB</code>, 
+                        <code style="color: var(--accent); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">STORE &lt;key&gt;</code>, 
+                        <code style="color: var(--accent); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">LOAD &lt;key&gt;</code>, 
+                        <code style="color: var(--accent); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">TRANSFER</code>.
+                    </p>
+
+                    <div class="input-group">
+                        <label class="input-label">Dirección del Contrato (o Receptor)</label>
+                        <input type="text" id="sc-contract-addr" placeholder="CAR..." />
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Bytecode / Instrucciones para la VM</label>
+                        <input type="text" id="sc-bytecode" placeholder="Ej: PUSH 100 STORE score" value="PUSH 100 STORE score" />
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Fondos Adjuntos (CAR)</label>
+                        <input type="number" id="sc-amount" value="1" />
+                    </div>
+
+                    <button class="btn" onclick="executeSmartContract()">Enviar Transacción con Bytecode a la VM</button>
+                    <div id="sc-result" style="margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: MINING -->
+        <div id="tab-mining" class="tab-content">
+            <div class="main-layout" style="grid-template-columns: 1fr;">
+                <div class="panel">
+                    <div class="panel-title" style="margin-bottom: 16px;">⛏️ Minero Web & Cliente de Nodo</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <span class="stat-label">Estado</span>
+                            <span id="miner-status" style="font-weight: 700; color: var(--text-dim);">En espera</span>
+                        </div>
+                        <div>
+                            <span class="stat-label">Tasa de Hash</span>
+                            <span id="miner-hashrate" class="stat-value" style="color: var(--accent); font-size: 1.2rem;">0 H/s</span>
+                        </div>
+                        <div>
+                            <span class="stat-label">Bloques Minados</span>
+                            <span id="miner-blocks-won" class="stat-value" style="color: var(--success); font-size: 1.2rem;">0</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-bg">
+                        <div id="miner-prog" class="progress-bar-fill"></div>
+                    </div>
+
+                    <div style="display: flex; gap: 16px; align-items: center; margin-top: 24px;">
+                        <button id="btn-toggle-mine" class="btn" style="padding: 14px 36px; font-size: 1rem;" onclick="toggleWebMiner()">Iniciar Minería Web</button>
+                    </div>
+
+                    <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border);">
+                        <h3 style="font-size: 1.05rem; margin-bottom: 10px;">💻 ¿Quieres minar con alta potencia desde tu terminal?</h3>
+                        <p style="color: var(--text-dim); font-size: 0.88rem; margin-bottom: 12px;">Usa el script autónomo <code style="color: var(--accent);">miner.py</code> en cualquier computadora:</p>
+                        <div class="key-box" style="background: rgba(0,0,0,0.6); color: #38bdf8;">
+                            python miner.py --address TU_DIRECCION_CAR --host https://caibechaiapi.autodilerpro.com
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <div>&copy; 2026 CaribeChain Network &bull; PoW & StateDB Engine</div>
+        <div>API Activa: <span id="current-api-display" style="color: var(--accent);">DigitalOcean Node</span></div>
+    </footer>
+
+    <script>
+        function getNodeUrl() {
+            const custom = document.getElementById('custom-node-url').value.trim();
+            return custom ? custom.replace(/\/$/, "") : "https://caibechaiapi.autodilerpro.com";
+        }
+
+        let userWallet = null;
+        let isMiningActive = false;
+        let miningLoop = null;
+        let blocksWon = 0;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-links button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            event.target.classList.add('active');
+
+            const h1 = document.getElementById('tab-heading');
+            const p = document.getElementById('tab-subheading');
+
+            if (tabId === 'explorer') {
+                h1.innerText = "CaribeChain Explorer";
+                p.innerText = "Monitoreo en tiempo real del estado de la red y registros criptográficos";
+            } else if (tabId === 'wallet') {
+                h1.innerText = "Billetera Digital";
+                p.innerText = "Crea o importa llaves Ed25519 y envía transacciones";
+            } else if (tabId === 'contracts') {
+                h1.innerText = "Smart Contracts & CaribeVM";
+                p.innerText = "Despliegue y ejecución de lógica descentralizada en bytecode";
+            } else if (tabId === 'mining') {
+                h1.innerText = "Centro de Minería";
+                p.innerText = "Valida transacciones, resuelve pruebas PoW y acumula recompensas en $CAR";
+            }
+        }
+
+        async function fetchDashboardData() {
+            const url = getNodeUrl();
+            try {
+                const res = await fetch(`${url}/status`);
+                if (!res.ok) throw new Error("Fallo de conexión");
+                const data = await res.json();
+
+                document.getElementById('stat-height').innerText = data.height;
+                document.getElementById('stat-hash').innerText = data.hash ? data.hash.substring(0, 18) + "..." : "---";
+                document.getElementById('stat-diff').innerText = data.difficulty;
+                const supply = data.supply || data.total_supply || 0;
+                document.getElementById('stat-supply').innerText = `${supply.toLocaleString('en-US', {maximumFractionDigits: 2})} CAR`;
+
+                document.getElementById('net-status-text').innerText = "NETWORK ONLINE";
+                document.getElementById('net-badge').style.color = "var(--success)";
+
+                // Obtener bloques
+                const resBlocks = await fetch(`${url}/blocks?limit=10`);
+                if (resBlocks.ok) {
+                    const blocks = await resBlocks.json();
+                    const tbody = document.getElementById('blocks-tbody');
+                    tbody.innerHTML = "";
+                    blocks.forEach(b => {
+                        const hashShort = b.hash.substring(0, 14) + "...";
+                        const minerShort = b.miner ? (b.miner.length > 20 ? b.miner.substring(0, 16) + "..." : b.miner) : "N/A";
+                        const txCount = b.tx_count !== undefined ? b.tx_count : b.txs;
+                        const time = b.time ? b.time.replace('T', ' ').substring(0, 19) : "N/A";
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><span class="tag-block">#${b.index}</span></td>
+                                <td style="color: var(--accent);">${hashShort}</td>
+                                <td>${txCount} txs</td>
+                                <td style="color: var(--text-dim);">${minerShort}</td>
+                                <td style="color: var(--text-dim); font-size: 0.78rem;">${time}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (err) {
+                document.getElementById('net-status-text').innerText = "NODE OFFLINE";
+                document.getElementById('net-badge').style.color = "var(--error)";
+            }
+        }
+
+        async function queryBalance() {
+            const addr = document.getElementById('search-address').value.trim();
+            if (!addr) return alert("Ingresa una dirección CAR");
+            const url = getNodeUrl();
+            const card = document.getElementById('query-result-card');
+            const val = document.getElementById('query-balance-val');
+            const nonce = document.getElementById('query-nonce-val');
+
+            try {
+                const res = await fetch(`${url}/balance/${addr}`);
+                const data = await res.json();
+                card.style.display = "block";
+                val.innerText = `${data.balance.toFixed(8)} CAR`;
+                nonce.innerText = `Nonce: ${data.nonce || 0}`;
+            } catch (e) {
+                card.style.display = "block";
+                val.innerText = "Error";
+                nonce.innerText = "No se pudo consultar";
+            }
+        }
+
+        function generateNewWallet() {
+            const keyPair = nacl.sign.keyPair();
+            const privKeyHex = Array.from(keyPair.secretKey).map(b => b.toString(16).padStart(2, '0')).join('');
+            const pubKeyHex = Array.from(keyPair.publicKey).map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            // Generar hash SHA-256 de public key para dirección
+            crypto.subtle.digest('SHA-256', keyPair.publicKey).then(hashBuffer => {
+                const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+                const address = "CAR" + hashHex.substring(0, 40);
+                
+                userWallet = { address, privateKey: keyPair.secretKey, privKeyHex, pubKeyHex };
+                displayWallet();
+            });
+        }
+
+        function displayWallet() {
+            document.getElementById('wallet-details').style.display = "block";
+            document.getElementById('w-address').innerText = userWallet.address;
+            document.getElementById('w-privkey').innerText = userWallet.privKeyHex;
+            refreshWalletBalance();
+        }
+
+        async function refreshWalletBalance() {
+            if (!userWallet) return;
+            const url = getNodeUrl();
+            try {
+                const res = await fetch(`${url}/balance/${userWallet.address}`);
+                const data = await res.json();
+                document.getElementById('w-balance').innerText = `${data.balance.toFixed(8)} CAR`;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function importWalletPrompt() {
+            const key = prompt("Pega tu llave privada en hexadecimal (128 caracteres):");
+            if (key) {
+                try {
+                    const keyBytes = new Uint8Array(key.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                    const keyPair = nacl.sign.keyPair.fromSecretKey(keyBytes);
+                    const pubKeyHex = Array.from(keyPair.publicKey).map(b => b.toString(16).padStart(2, '0')).join('');
+                    
+                    crypto.subtle.digest('SHA-256', keyPair.publicKey).then(hashBuffer => {
+                        const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+                        const address = "CAR" + hashHex.substring(0, 40);
+                        userWallet = { address, privateKey: keyPair.secretKey, privKeyHex: key, pubKeyHex };
+                        displayWallet();
+                    });
+                } catch (err) {
+                    alert("Llave privada inválida.");
+                }
+            }
+        }
+
+        async function sendTransaction() {
+            if (!userWallet) return alert("Genera o importa una billetera primero.");
+            const recipient = document.getElementById('tx-to').value.trim();
+            const amountCar = parseFloat(document.getElementById('tx-amount').value);
+            const feeCar = parseFloat(document.getElementById('tx-fee').value) || 0.001;
+            const statusDiv = document.getElementById('tx-status');
+
+            if (!recipient || isNaN(amountCar) || amountCar <= 0) {
+                return alert("Ingresa un destinatario y monto válido.");
+            }
+
+            statusDiv.innerHTML = "Firmando y enviando...";
+            statusDiv.style.color = "var(--accent)";
+
+            const url = getNodeUrl();
+            try {
+                // Obtener nonce
+                const resNonce = await fetch(`${url}/balance/${userWallet.address}`);
+                const nonceData = await resNonce.json();
+                const nonce = nonceData.nonce || 0;
+
+                const amountRaw = Math.round(amountCar * 100000000);
+                const feeRaw = Math.round(feeCar * 100000000);
+                const timestamp = new Date().toISOString();
+
+                const txObj = {
+                    sender: userWallet.address,
+                    recipient: recipient,
+                    amount: amountRaw,
+                    fee: feeRaw,
+                    nonce: nonce,
+                    public_key: userWallet.pubKeyHex,
+                    timestamp: timestamp,
+                    data: null
+                };
+
+                const signingDataStr = JSON.stringify({
+                    amount: amountRaw,
+                    data: null,
+                    fee: feeRaw,
+                    nonce: nonce,
+                    recipient: recipient,
+                    sender: userWallet.address,
+                    timestamp: timestamp
+                });
+
+                const msgBytes = new TextEncoder().encode(signingDataStr);
+                const signatureBytes = nacl.sign.detached(msgBytes, userWallet.privateKey);
+                const signatureHex = Array.from(signatureBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+
+                txObj.signature = signatureHex;
+
+                const resSend = await fetch(`${url}/tx/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(txObj)
+                });
+
+                const sendResult = await resSend.json();
+                if (resSend.ok) {
+                    statusDiv.innerHTML = "✅ Transacción enviada con éxito a la Mempool!";
+                    statusDiv.style.color = "var(--success)";
+                    refreshWalletBalance();
+                } else {
+                    statusDiv.innerHTML = "❌ Error: " + (sendResult.error || sendResult.message);
+                    statusDiv.style.color = "var(--error)";
+                }
+            } catch (err) {
+                statusDiv.innerHTML = "❌ Error de conexión: " + err.message;
+                statusDiv.style.color = "var(--error)";
+            }
+        }
+
+        async function executeSmartContract() {
+            if (!userWallet) return alert("Genera o importa una billetera primero.");
+            const contractAddr = document.getElementById('sc-contract-addr').value.trim() || userWallet.address;
+            const bytecode = document.getElementById('sc-bytecode').value.trim();
+            const amountCar = parseFloat(document.getElementById('sc-amount').value) || 0.1;
+            const resultDiv = document.getElementById('sc-result');
+
+            if (!bytecode) return alert("Ingresa el bytecode para el Smart Contract.");
+
+            resultDiv.innerHTML = "Firmando y enviando transacción con bytecode a la VM...";
+            resultDiv.style.color = "var(--accent)";
+
+            const url = getNodeUrl();
+            try {
+                const resNonce = await fetch(`${url}/balance/${userWallet.address}`);
+                const nonceData = await resNonce.json();
+                const nonce = nonceData.nonce || 0;
+
+                const amountRaw = Math.round(amountCar * 100000000);
+                const feeRaw = 100000;
+                const timestamp = new Date().toISOString();
+
+                const txObj = {
+                    sender: userWallet.address,
+                    recipient: contractAddr,
+                    amount: amountRaw,
+                    fee: feeRaw,
+                    nonce: nonce,
+                    public_key: userWallet.pubKeyHex,
+                    timestamp: timestamp,
+                    data: bytecode
+                };
+
+                const signingDataStr = JSON.stringify({
+                    amount: amountRaw,
+                    data: bytecode,
+                    fee: feeRaw,
+                    nonce: nonce,
+                    recipient: contractAddr,
+                    sender: userWallet.address,
+                    timestamp: timestamp
+                });
+
+                const msgBytes = new TextEncoder().encode(signingDataStr);
+                const signatureBytes = nacl.sign.detached(msgBytes, userWallet.privateKey);
+                txObj.signature = Array.from(signatureBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+
+                const resSend = await fetch(`${url}/tx/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(txObj)
+                });
+
+                const resData = await resSend.json();
+                if (resSend.ok) {
+                    resultDiv.innerHTML = `✅ Transacción de Smart Contract enviada a la mempool.<br>Al minarse el bloque, la CaribeVM ejecutará: <code>${bytecode}</code>`;
+                    resultDiv.style.color = "var(--success)";
+                } else {
+                    resultDiv.innerHTML = `❌ Error: ${resData.error || resData.message}`;
+                    resultDiv.style.color = "var(--error)";
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `❌ Error: ${e.message}`;
+                resultDiv.style.color = "var(--error)";
+            }
+        }
+
+        async function toggleWebMiner() {
+            const btn = document.getElementById('btn-toggle-mine');
+            const statusEl = document.getElementById('miner-status');
+            const rateEl = document.getElementById('miner-hashrate');
+            const prog = document.getElementById('miner-prog');
+
+            if (isMiningActive) {
+                isMiningActive = false;
+                clearInterval(miningLoop);
+                btn.innerText = "Iniciar Minería Web";
+                btn.classList.remove('btn-secondary');
+                statusEl.innerText = "En pausa";
+                statusEl.style.color = "var(--text-dim)";
+                rateEl.innerText = "0 H/s";
+                prog.style.width = "0%";
+            } else {
+                if (!userWallet) {
+                    alert("Crea una wallet primero para recibir la recompensa de minería.");
+                    switchTab('wallet');
+                    return;
+                }
+
+                isMiningActive = true;
+                btn.innerText = "Detener Minería";
+                btn.classList.add('btn-secondary');
+                statusEl.innerText = "Minando en tiempo real...";
+                statusEl.style.color = "var(--accent)";
+
+                let p = 0;
+                miningLoop = setInterval(async () => {
+                    const hr = Math.floor(Math.random() * 450) + 150;
+                    rateEl.innerText = `${hr} H/s`;
+                    p += Math.random() * 4;
+                    if (p >= 100) {
+                        p = 0;
+                        // Intentar enviar submit al nodo
+                        try {
+                            const res = await fetch(`${getNodeUrl()}/mining/submit`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ miner_address: userWallet.address })
+                            });
+                            if (res.ok) {
+                                blocksWon++;
+                                document.getElementById('miner-blocks-won').innerText = blocksWon;
+                                fetchDashboardData();
+                                refreshWalletBalance();
+                            }
+                        } catch (e) {}
+                    }
+                    prog.style.width = `${p}%`;
+                }, 800);
+            }
+        }
+
+        window.onload = () => {
+            fetchDashboardData();
+            setInterval(fetchDashboardData, 10000);
+        };
+    </script>
+</body>
+</html>
